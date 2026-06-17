@@ -233,7 +233,9 @@ function setCurrentStep(step) {
     const reportCard = document.querySelector('.card--report');
     if (reportCard) {
       const top = reportCard.getBoundingClientRect().top + window.scrollY - 8;
-      window.scrollTo({ top: Math.max(0, top), behavior: 'smooth' });
+      const safeTop = Math.max(0, top);
+      window.scrollTo({ top: safeTop, behavior: 'auto' });
+      setTimeout(() => window.scrollTo({ top: safeTop, behavior: 'auto' }), 60);
     }
   }
 }

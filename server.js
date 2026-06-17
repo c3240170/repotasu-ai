@@ -692,75 +692,16 @@ function enforceCharLimit(text, targetChars) {
 }
 
 /**
- * @param {{
- *  system: string,
- *  quality: string,
- *  targetChars: number,
- *  text: string,
- *  allowAiTrim?: boolean,
- *  aiTrimTimeoutMs?: number
- * }} p
+ * @param {{ targetChars: number, text: string }} p
  * @returns {Promise<{ text: string, adjusted: boolean, method?: string }>}
  */
-async function ensureWithinCharLimit({
-  system,
-  quality,
-  targetChars,
-  text,
-  allowAiTrim = true,
-  aiTrimTimeoutMs = 8000
-}) {
-  let out = String(text ?? '').trim();
+async function ensureWithinCharLimit({ targetChars, text }) {
+  const out = String(text ?? '').trim();
   if (countTextChars(out) <= targetChars) {
     return { text: out, adjusted: false };
   }
-
-  if (!allowAiTrim) {
-    return { text: enforceCharLimit(out, targetChars), adjusted: true, method: 'truncate_policy' };
-  }
-
-  const trimUser = [
-    charCountStrictBlock(targetChars),
-    `指定文字数: ${targetChars}字（厳守・超過禁止）`,
-    '以下の下書きは指定文字数を超えています。意味と論点は保ち、具体例や説明を減らして必ず指定文字数以内に短く修正してください。',
-    '新しい事実は追加しないでください。出力は本文のみ。',
-    '',
-    '--- 修正対象の下書き ---',
-    out
-  ].join('\n');
-
-  let timeoutId;
-  try {
-    const trimmed = await Promise.race([
-      runTextCompletion({
-        system,
-        user: trimUser,
-        images: [],
-        temperature: 0.35,
-        quality,
-        useVision: false,
-        jsonMode: false
-      }),
-      new Promise((_, reject) => {
-        timeoutId = setTimeout(() => reject(new Error('AI_TRIM_TIMEOUT')), aiTrimTimeoutMs);
-      })
-    ]);
-    const t = String(trimmed ?? '').trim();
-    if (t && countTextChars(t) <= targetChars) {
-      return { text: t, adjusted: true, method: 'ai_trim' };
-    }
-    if (t && countTextChars(t) < countTextChars(out)) out = t;
-  } catch (err) {
-    const msg = err instanceof Error ? err.message : String(err);
-    if (msg === 'AI_TRIM_TIMEOUT') {
-      return { text: enforceCharLimit(out, targetChars), adjusted: true, method: 'truncate_timeout' };
-    }
-    /* 切り詰めへフォールバック */
-  } finally {
-    if (timeoutId) clearTimeout(timeoutId);
-  }
-
-  return { text: enforceCharLimit(out, targetChars), adjusted: true, method: 'truncate' };
+  // 2nd AI pass is disabled for latency stability.
+  return { text: enforceCharLimit(out, targetChars), adjusted: true, method: 'truncate_policy' };
 }
 
 const MAX_REPORT_IMAGES = 5;
@@ -2232,16 +2173,10 @@ app.post('/api/generate', async (req, res) => {
     });
     perf.aiMs = Date.now() - aiStartAt;
 
-    const allowAiTrim = Boolean(req.actPro && quality === 'high' && perf.aiMs <= 12000);
-    perfMeta.allowAiTrim = allowAiTrim;
     const enforceStartAt = Date.now();
     const enforced = await ensureWithinCharLimit({
-      system,
-      quality,
       targetChars,
-      text: textRaw,
-      allowAiTrim,
-      aiTrimTimeoutMs: 8000
+      text: textRaw
     });
     perf.enforceMs = Date.now() - enforceStartAt;
     perfMeta.adjustMethod = enforced.method || 'none';
