@@ -366,7 +366,7 @@ body {
   .funMeterCard__subtitleLabel {
     font-size: 0.625rem;
     white-space: nowrap;
-    max-width: 40%;
+    max-width: 46%;
     text-align: right;
     padding-top: 2px;
   }
@@ -418,6 +418,41 @@ body {
 
   .draftChecklist__status {
     margin-top: 1px;
+  }
+}
+
+@media (max-width: 820px) {
+  .funMeterMetric__head {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .funMeterMetric__hint {
+    max-width: 52%;
+    text-align: right;
+    overflow-wrap: anywhere;
+  }
+
+  .funMeterBarTrack--prof {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 6px;
+    align-items: center;
+  }
+
+  .funProfCard,
+  .funProfCard.is-active {
+    width: 100%;
+    min-width: 0;
+    height: 46px;
+    transform: none;
+  }
+
+  .funProfCrop {
+    width: 34px;
+    height: 34px;
   }
 }
 
