@@ -1355,6 +1355,8 @@ body {
   }
 
   .genBarSticky {
+    position: static;
+    bottom: auto;
     margin: 14px -12px 0;
     padding: 10px 12px max(12px, env(safe-area-inset-bottom));
     background: linear-gradient(

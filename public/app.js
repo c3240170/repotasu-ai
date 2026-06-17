@@ -228,6 +228,14 @@ function setCurrentStep(step) {
     tab.setAttribute('aria-current', isActive ? 'step' : 'false');
   }
   if (s === 3) renderFunStrip();
+  const isMobile = window.matchMedia('(max-width: 820px)').matches;
+  if (isMobile) {
+    const reportCard = document.querySelector('.card--report');
+    if (reportCard) {
+      const top = reportCard.getBoundingClientRect().top + window.scrollY - 8;
+      window.scrollTo({ top: Math.max(0, top), behavior: 'smooth' });
+    }
+  }
 }
 
 function fmtMsg(key, vars = {}) {
