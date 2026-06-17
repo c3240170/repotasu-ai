@@ -1,0 +1,494 @@
+/* ログイン専用 — 明るいミニマル画面（メインの style.css と独立） */
+:root {
+  --login-bg: #f4efe6;
+  --login-bg2: #ebe4d8;
+  --login-text: #1a1a1a;
+  --login-muted: #5c5c5c;
+  --login-line: rgba(0, 0, 0, 0.12);
+  --login-input-bg: #faf8f4;
+  --login-orange: #ea580c;
+  --login-orange-hover: #c2410c;
+  --login-navy: #0f172a;
+  --login-radius: 12px;
+  --login-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body.loginPage {
+  height: 100%;
+}
+
+body.loginPage {
+  margin: 0;
+  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, "Noto Sans JP",
+    "Hiragino Kaku Gothic ProN", Meiryo, sans-serif;
+  font-size: 15px;
+  line-height: 1.55;
+  color: var(--login-text);
+  background: var(--login-bg);
+  -webkit-font-smoothing: antialiased;
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+}
+
+.loginTop {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 16px 20px;
+  flex-shrink: 0;
+}
+
+.loginTopRight {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 10px;
+  max-width: 12rem;
+}
+
+.loginLocalePicker {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+}
+
+.loginLocaleLabel {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  color: var(--login-muted);
+}
+
+.loginLocaleSelect {
+  font-size: 0.8125rem;
+  padding: 8px 28px 8px 10px;
+  border-radius: 10px;
+  border: 1px solid var(--login-line);
+  background: var(--login-input-bg);
+  color: var(--login-text);
+  cursor: pointer;
+}
+
+.loginBrandLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  color: inherit;
+}
+
+.loginBrandLink:hover .loginBrandName {
+  text-decoration: underline;
+}
+
+.loginLogoSm {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  font-size: 17px;
+  font-weight: 900;
+  color: #061018;
+  background: linear-gradient(145deg, #8ab8ff 0%, #5eead4 100%);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+}
+
+.loginBrandName {
+  font-weight: 800;
+  font-size: 0.95rem;
+  letter-spacing: 0.02em;
+}
+
+.loginPromoPill {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  color: var(--login-navy);
+  background: rgba(255, 255, 255, 0.85);
+  border: 1px solid var(--login-line);
+  border-radius: 999px;
+  padding: 6px 12px;
+  box-shadow: var(--login-shadow);
+  text-align: center;
+  max-width: 11rem;
+  line-height: 1.35;
+}
+
+.loginShell {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 16px 40px;
+}
+
+.loginCard {
+  width: min(400px, 100%);
+}
+
+.loginBrandBig {
+  text-align: center;
+  margin-bottom: 4px;
+}
+
+.authModeTabs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+  margin: 18px 0 0;
+  padding: 4px;
+  border-radius: var(--login-radius);
+  background: var(--login-input-bg);
+  border: 1px solid var(--login-line);
+}
+
+.authModeTab {
+  padding: 11px 12px;
+  border: none;
+  border-radius: calc(var(--login-radius) - 4px);
+  font-size: 0.90625rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  background: transparent;
+  color: var(--login-muted);
+  transition: color 0.15s ease, background 0.15s ease, box-shadow 0.15s ease;
+}
+
+.authModeTab:hover {
+  color: var(--login-text);
+}
+
+.authModeTab--active {
+  background: #fff;
+  color: var(--login-navy);
+  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.08);
+}
+
+.authModeTab:focus-visible {
+  outline: 2px solid var(--login-navy);
+  outline-offset: 2px;
+}
+
+#authPanel {
+  outline: none;
+}
+
+.loginHeading {
+  margin: 14px 0 8px;
+  font-size: 1.125rem;
+  font-weight: 800;
+  text-align: center;
+  color: var(--login-navy);
+}
+
+.loginModeHint {
+  margin: 0 0 18px;
+  font-size: 0.875rem;
+  color: var(--login-muted);
+  text-align: center;
+  line-height: 1.55;
+}
+
+.loginIntentBanner {
+  margin: -6px 0 14px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  border: 1px solid rgba(234, 88, 12, 0.35);
+  background: rgba(234, 88, 12, 0.08);
+  color: #7c2d12;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  text-align: center;
+  line-height: 1.45;
+}
+
+.loginLogoLg {
+  width: 56px;
+  height: 56px;
+  border-radius: 16px;
+  margin: 0 auto 12px;
+  display: grid;
+  place-items: center;
+  font-size: 24px;
+  font-weight: 900;
+  color: #061018;
+  background: linear-gradient(145deg, #8ab8ff 0%, #5eead4 100%);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+.loginBrandTitle {
+  margin: 0;
+  font-size: 1.35rem;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+}
+
+.btnGoogle {
+  width: 100%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 14px 16px;
+  border: none;
+  border-radius: var(--login-radius);
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: #fff;
+  background: var(--login-orange);
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(234, 88, 12, 0.35);
+  transition: background 0.15s ease, transform 0.1s ease;
+}
+
+.btnGoogle:hover:not(:disabled) {
+  background: var(--login-orange-hover);
+}
+
+.btnGoogle:active:not(:disabled) {
+  transform: scale(0.99);
+}
+
+.btnGoogle svg {
+  flex-shrink: 0;
+}
+
+.btnGoogle:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.loginGoogleHint {
+  margin: 8px 0 0;
+  font-size: 0.75rem;
+  color: var(--login-muted);
+  text-align: center;
+}
+
+.loginOr {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 22px 0 18px;
+  color: var(--login-muted);
+  font-size: 0.8125rem;
+}
+
+.loginOr::before,
+.loginOr::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--login-line);
+}
+
+.loginField {
+  margin-bottom: 14px;
+}
+
+.loginLabel {
+  display: block;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+.loginInput,
+.loginPasswordRow .loginInput {
+  width: 100%;
+  padding: 12px 14px;
+  font-size: 0.9375rem;
+  border: 1px solid var(--login-line);
+  border-radius: var(--login-radius);
+  background: var(--login-input-bg);
+  color: var(--login-text);
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.loginInput:focus {
+  border-color: rgba(15, 23, 42, 0.35);
+  box-shadow: 0 0 0 3px rgba(15, 23, 42, 0.08);
+}
+
+.loginPasswordRow {
+  display: flex;
+  gap: 8px;
+  align-items: stretch;
+}
+
+.loginPasswordRow .loginInput {
+  flex: 1;
+}
+
+.loginSkip {
+  margin-top: 4px;
+}
+
+.btnSkipLink {
+  display: block;
+  width: 100%;
+  margin-top: 10px;
+  padding: 12px 16px;
+  text-align: center;
+  text-decoration: none;
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--login-navy);
+  background: var(--login-input-bg);
+  border: 1px solid var(--login-line);
+  border-radius: var(--login-radius);
+  box-sizing: border-box;
+}
+
+.btnSkipLink:hover {
+  border-color: rgba(0, 0, 0, 0.18);
+  color: var(--login-text);
+}
+
+.btnGhost {
+  flex-shrink: 0;
+  padding: 0 12px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--login-muted);
+  background: var(--login-input-bg);
+  border: 1px solid var(--login-line);
+  border-radius: var(--login-radius);
+  cursor: pointer;
+}
+
+.btnGhost:hover {
+  color: var(--login-text);
+}
+
+.btnSignIn {
+  width: 100%;
+  margin-top: 8px;
+  padding: 14px 16px;
+  border: none;
+  border-radius: var(--login-radius);
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: #fff;
+  background: var(--login-navy);
+  cursor: pointer;
+  transition: opacity 0.15s ease, transform 0.1s ease;
+}
+
+.btnSignIn:hover:not(:disabled) {
+  opacity: 0.92;
+}
+
+.btnSignIn:active:not(:disabled) {
+  transform: scale(0.99);
+}
+
+.btnSignIn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.loginStatus {
+  margin-top: 14px;
+  min-height: 1.25em;
+  font-size: 0.8125rem;
+  text-align: center;
+}
+
+.loginStatus.error {
+  color: #b91c1c;
+}
+
+.loginStatus.ok {
+  color: #15803d;
+}
+
+.loginLinks {
+  margin-top: 22px;
+  text-align: center;
+  font-size: 0.8125rem;
+  color: var(--login-muted);
+  line-height: 1.7;
+}
+
+.loginLinks p {
+  margin: 0;
+}
+
+.loginLinks p + p {
+  margin-top: 8px;
+}
+
+.loginLinksHint {
+  font-size: 0.75rem;
+  color: var(--login-muted);
+  line-height: 1.5;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 6px 8px;
+}
+
+.loginHintSmall {
+  margin: 8px 0 0;
+  font-size: 0.6875rem;
+  color: var(--login-muted);
+  line-height: 1.45;
+}
+
+.loginLinks a,
+.loginLinks button.linkLike {
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  color: var(--login-navy);
+  font-weight: 700;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.loginFoot {
+  padding: 16px 20px 24px;
+  flex-shrink: 0;
+}
+
+.loginFootInner {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 16px;
+  justify-content: center;
+  font-size: 0.6875rem;
+  color: var(--login-muted);
+}
+
+.loginFootInner a {
+  color: var(--login-muted);
+  text-decoration: none;
+}
+
+.loginFootInner a:hover {
+  text-decoration: underline;
+  color: var(--login-text);
+}
+
+@media (max-width: 480px) {
+  .loginPromoPill {
+    font-size: 0.625rem;
+    padding: 5px 10px;
+    max-width: 9rem;
+  }
+}

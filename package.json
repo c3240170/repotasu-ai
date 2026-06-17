@@ -1,0 +1,28 @@
+{
+  "name": "repotasu-ai",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "node server.js",
+    "dev:open": "node scripts/dev-and-open.mjs",
+    "start": "node server.js",
+    "env:bootstrap": "node scripts/env-bootstrap.mjs",
+    "env:check": "node scripts/env-check.mjs",
+    "build": "node --check server.js && node scripts/build-check.mjs",
+    "security:check": "npm audit --omit=dev --audit-level=high && node --check server.js",
+    "security:evidence:defender": "powershell -ExecutionPolicy Bypass -File .\\scripts\\security\\collect-defender-evidence.ps1 -ScanType Quick",
+    "security:evidence:monthly": "powershell -ExecutionPolicy Bypass -File .\\scripts\\security\\run-monthly-security-check.ps1",
+    "stripe:listen": "stripe listen --forward-to localhost:5173/api/billing/webhook",
+    "site": "node scripts/open-site.mjs"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "cookie-parser": "^1.4.7",
+    "dotenv": "^16.6.1",
+    "express": "^4.21.2",
+    "openai": "^5.12.2",
+    "stripe": "^18.3.0"
+  }
+}
+

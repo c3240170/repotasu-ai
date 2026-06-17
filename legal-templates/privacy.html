@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>プライバシーポリシー｜{{SITE_NAME}}</title>
+    <link rel="stylesheet" href="/legal.css" />
+  </head>
+  <body>
+    <main class="legalWrap">
+      <article class="legalCard">
+        <a class="legalBack" href="/app">← {{SITE_NAME}} に戻る</a>
+        <h1>プライバシーポリシー</h1>
+        <p class="legalMeta">最終更新日：{{UPDATED}} · 運営者：{{OPERATOR_NAME}}</p>
+
+        <p>{{OPERATOR_NAME}}（以下「当社」）は、本サービス「{{SITE_NAME}}」における個人情報等の取扱いについて、以下のとおり定めます。</p>
+
+        <h2>1. 収集する情報</h2>
+        <ul>
+          <li>メールアドレス、パスワード（ハッシュ化して保存）</li>
+          <li>Google ログイン利用時：Google から提供される識別子・メールアドレス</li>
+          <li>入力されたレポートテーマ・参考資料・生成下書き（サービス提供のため）</li>
+          <li>利用回数・プラン情報・決済に関する Stripe 顧客 ID</li>
+          <li>Cookie（セッション維持・匿名利用枠の識別）</li>
+          <li>アクセスログ（IP アドレス、ブラウザ情報、日時等）</li>
+        </ul>
+
+        <h2>2. 利用目的</h2>
+        <ul>
+          <li>本サービスの提供・認証・課金</li>
+          <li>利用枠の管理、不正利用の防止</li>
+          <li>お問い合わせ対応</li>
+          <li>サービス改善・障害対応</li>
+        </ul>
+
+        <h2>3. 第三者提供・委託</h2>
+        <p>当社は、サービス提供のため以下の事業者にデータを送信する場合があります。</p>
+        <ul>
+          <li><strong>Google（Gemini API）</strong> … テキスト生成・下書きチェック</li>
+          <li><strong>OpenAI</strong> … 画像生成機能利用時（設定時のみ）</li>
+          <li><strong>Stripe</strong> … 決済・サブスクリプション管理</li>
+          <li><strong>Google</strong> … OAuth ログイン</li>
+        </ul>
+        <p>各事業者のプライバシーポリシーもご確認ください。</p>
+
+        <h2>4. 保存期間</h2>
+        <p>アカウント存続中は保持します。退会後は合理的な期間内に削除します。法令上保存が必要な場合を除きます。</p>
+
+        <h2>5. Cookie</h2>
+        <p>ログイン状態（<code>repotasu_session</code>）および匿名利用枠（<code>repotasu_anon</code>）のために Cookie を使用します。ブラウザ設定で無効にすると一部機能が使えません。</p>
+
+        <h2>6. 利用者の権利</h2>
+        <p>開示・訂正・削除等のご請求は <a class="legalMail" href="mailto:{{SUPPORT_EMAIL}}">{{SUPPORT_EMAIL}}</a> までご連絡ください。アカウント削除はログイン後、アプリ内の「アカウント削除」からも行えます。</p>
+
+        <h2>7. 安全管理</h2>
+        <p>HTTPS 通信、パスワードのハッシュ化、アクセス制限等の合理的な措置を講じます。</p>
+
+        <h2>8. お問い合わせ</h2>
+        <p>
+          {{OPERATOR_NAME}}<br />
+          {{OPERATOR_ADDRESS}}<br />
+          <a class="legalMail" href="mailto:{{SUPPORT_EMAIL}}">{{SUPPORT_EMAIL}}</a>
+        </p>
+
+        <footer class="legalFoot">
+          <a href="/terms.html">利用規約</a> ·
+          <a href="/tokusho.html">特定商取引法に基づく表記</a> ·
+          <a href="/contact.html">お問い合わせ</a>
+        </footer>
+      </article>
+    </main>
+  </body>
+</html>

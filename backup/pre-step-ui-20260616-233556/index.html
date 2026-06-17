@@ -1,0 +1,413 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#f0ebe3" />
+    <title>レポたすAI｜自然なレポート下書き</title>
+    <meta
+      name="description"
+      content="大学生・留学生向け。カンペ感を抑えた自然な下書き。Language で UI を日本語・English・中文・Tiếng Việt・नेपाली・हिन्दी・Bahasa Indonesiaに切替可能。"
+    />
+    <link rel="stylesheet" href="/style.css" />
+  </head>
+  <body>
+    <main class="wrap">
+      <header class="hero">
+        <span id="planBadge" class="pill pill--hero pill--planCorner">無料枠</span>
+        <div class="heroTop">
+          <div class="heroMain">
+            <div class="brand">
+              <div class="logo" aria-hidden="true">レ</div>
+              <div class="brandText">
+                <div class="name">レポたすAI</div>
+                <p class="tagline" id="tagline">カンペ感を抑えた、自然なレポート下書き</p>
+              </div>
+            </div>
+            <ul class="valueStrip" aria-label="特徴">
+              <li id="v1">自然な文体</li>
+              <li id="v2">スマホで完結</li>
+              <li id="v3">すぐコピー</li>
+            </ul>
+            <div class="localeRow">
+              <label class="localePicker" for="locale">
+                <span id="localeLabel" class="localePickerLabel">Language</span>
+                <select id="locale" class="select select--locale" autocomplete="off">
+                  <option value="ja">日本語</option>
+                  <option value="en">English</option>
+                  <option value="zh">中文</option>
+                  <option value="vi">Tiếng Việt</option>
+                  <option value="ne">नेपाली</option>
+                  <option value="hi">हिन्दी</option>
+                  <option value="id">Bahasa Indonesia</option>
+                </select>
+              </label>
+            </div>
+          </div>
+        </div>
+        <div class="heroUsageBar">
+          <span id="usageLine" class="usageLine usageLine--hero" role="status" aria-live="polite"></span>
+          <div class="topActionRow">
+            <a href="/login.html" class="topLink" id="linkLogin">ログイン</a>
+            <a href="/login.html?intent=pro" class="topLink topLink--muted" id="linkPro">Pro</a>
+            <button type="button" id="upgradeBtn" class="btnTiny btnProTiny" hidden>Pro にする</button>
+            <button type="button" id="billingBtn" class="btnTiny" hidden>請求・解約</button>
+            <button type="button" id="logoutBtn" class="btnTiny" hidden>ログアウト</button>
+          </div>
+        </div>
+      </header>
+
+      <div id="authStatus" class="authBanner" role="status" aria-live="polite" hidden></div>
+
+      <section class="card card--report">
+        <div class="cardHead">
+          <h2 class="cardTitle" id="cardReportTitle">レポート下書きを作成</h2>
+          <p class="cardLead" id="cardReportLead">テーマと文字数を入れて、下書きを生成します。</p>
+        </div>
+        <label class="field" for="theme">
+          <div class="labelRow">
+            <span class="label" id="lblTheme">テーマ</span>
+            <span class="hint" id="hintTheme">課題文をそのまま貼ってもOK</span>
+          </div>
+          <textarea
+            id="theme"
+            class="textarea textarea--field textarea--themeCompact"
+            rows="2"
+            placeholder="例：日本のコンビニ文化が生活にもたらす利点と課題について"
+          ></textarea>
+        </label>
+
+        <div class="sampleStarter" aria-labelledby="sampleStarterTitle">
+          <div class="sampleStarter__head">
+            <span class="sampleStarter__title" id="sampleStarterTitle">迷ったら例題から</span>
+            <span class="sampleStarter__hint" id="sampleStarterHint">テーマ・参考資料・文字数が入ります</span>
+          </div>
+          <div class="sampleStarter__chips">
+            <button type="button" class="sampleChip" data-sample-key="conbini" id="sampleConbini">
+              コンビニ文化
+            </button>
+            <button type="button" class="sampleChip" data-sample-key="culture" id="sampleCulture">
+              異文化コミュニケーション
+            </button>
+            <button type="button" class="sampleChip" data-sample-key="sdg" id="sampleSdg">
+              SDGs と大学生活
+            </button>
+          </div>
+        </div>
+
+        <label class="field" for="referenceMaterial">
+          <div class="labelRow">
+            <span class="label" id="lblReference">参考資料・授業プリントの内容</span>
+            <span class="hint" id="hintReference">参考にしたい文章を貼り付けてください</span>
+          </div>
+          <textarea
+            id="referenceMaterial"
+            class="textarea textarea--field textarea--referenceTall"
+            rows="4"
+            spellcheck="true"
+          ></textarea>
+        </label>
+
+        <div class="field">
+          <div class="labelRow">
+            <span class="label" id="lblReportImage">資料画像（任意）</span>
+            <span class="hint" id="hintReportImage">課題のスクショやプリントの写真。複数枚まで追加できます。</span>
+          </div>
+          <div class="reportImagePickRow">
+            <input
+              type="file"
+              id="reportImageInput"
+              class="input input--file input--fileHidden"
+              multiple
+              accept="image/png,image/jpeg,image/jpg,image/gif,image/webp"
+            />
+            <button type="button" id="reportImagePick" class="btnSecondary btnSecondary--compact">
+              画像を選択
+            </button>
+          </div>
+          <p class="reportImageGuide" id="reportImageGuide"></p>
+          <div id="reportImageList" class="reportImageList" aria-live="polite"></div>
+          <button type="button" id="reportImageClear" class="btnSecondary btnSecondary--compact" hidden>
+            画像をすべて外す
+          </button>
+        </div>
+
+        <label class="field" id="targetCharsFieldWrap" for="targetChars">
+          <div class="labelRow">
+            <span class="label label--withBadge">
+              <span id="lblChars">文字数目安</span>
+              <span class="proBadge proBadge--soft" id="charsProBadge" hidden>Proで10,000字</span>
+            </span>
+                <span class="hint" id="hintChars">100〜4000</span>
+          </div>
+          <input id="targetChars" class="input" inputmode="numeric" value="800" />
+        </label>
+
+        <details class="advancedSettings" id="advancedSettings">
+          <summary class="advancedSettingsSummary">
+            <span id="lblAdvancedSettings">▼ 詳細設定</span>
+          </summary>
+          <div class="advancedSettingsBody">
+
+            <label class="field" for="historySelect">
+              <div class="labelRow">
+                <span class="label" id="lblHistory">下書き履歴</span>
+                <span class="hint" id="hintHistory">設定を復元（画像は含みません）</span>
+              </div>
+              <select id="historySelect" class="select">
+                <option value="">履歴から選ぶ…</option>
+              </select>
+            </label>
+
+            <label class="field" for="outputPreset">
+              <div class="labelRow">
+                <span class="label" id="lblOutputPreset">出力形式</span>
+                <span class="hint" id="hintOutputPreset">大学の指定に合わせて選べます</span>
+              </div>
+              <select id="outputPreset" class="select">
+                <option value="default" selected>標準</option>
+                <option value="word_heading">Word向け（見出し階層）</option>
+                <option value="no_bullets">箇条書きなし</option>
+              </select>
+            </label>
+
+            <label class="field" for="studentMode">
+              <div class="labelRow">
+                <span class="label" id="lblMode">モード</span>
+                <span class="hint" id="hintMode">完成度の目安（口調とは別）</span>
+              </div>
+              <select id="studentMode" class="select">
+                <option value="honors">優等生（完成度高めOK）</option>
+                <option value="average" selected>普通の大学生</option>
+                <option value="barely">ギリ単（最低限・素早く）</option>
+              </select>
+            </label>
+
+            <label class="field" for="tone">
+              <div class="labelRow">
+                <span class="label" id="lblTone">口調</span>
+              </div>
+              <select id="tone" class="select">
+                <option value="formal">フォーマル</option>
+                <option value="casual" selected>カジュアル</option>
+                <option value="frank">率直</option>
+                <option value="confident">堂々</option>
+                <option value="friendly">フレンドリー</option>
+              </select>
+            </label>
+
+            <label class="field" id="qualityFieldWrap" for="quality">
+              <div class="labelRow">
+                <span class="label label--withBadge">
+                  <span id="lblQuality">品質</span>
+                  <span class="proBadge" id="qualityProBadge" hidden>Pro</span>
+                </span>
+                <span class="hint" id="hintQuality">高品質は Pro のみ（論旨を整え、AIっぽさは増やさない）</span>
+              </div>
+              <select id="quality" class="select">
+                <option value="normal" selected>標準</option>
+                <option value="high">高品質（Pro）</option>
+              </select>
+            </label>
+
+            <label class="field" for="outputLang">
+              <div class="labelRow">
+                <span class="label" id="lblOutputLang">下書きの言語</span>
+                <span class="hint" id="hintOutputLang">提出言語に合わせて選べます</span>
+              </div>
+              <select id="outputLang" class="select">
+                <option value="en">English</option>
+                <option value="vi">Tiếng Việt</option>
+                <option value="ne">नेपाली</option>
+                <option value="hi">हिन्दी</option>
+                <option value="zh">中文（简体）</option>
+                <option value="ja" selected>日本語</option>
+                <option value="id">Bahasa Indonesia</option>
+              </select>
+            </label>
+
+            <label class="field" for="japaneseSentenceStyle" id="jaSentenceFieldWrap">
+              <div class="labelRow">
+                <span class="label" id="lblJaSentence">文体（日本語のとき）</span>
+                <span class="hint" id="hintJaSentence">だ・である／です・ます</span>
+              </div>
+              <select id="japaneseSentenceStyle" class="select">
+                <option value="desu" selected>です・ます調</option>
+                <option value="dearu">だ・である調</option>
+              </select>
+            </label>
+          </div>
+        </details>
+
+        <div class="genBarSticky" id="genBarSticky">
+          <div class="genRow genRow--afterForm genRow--solo">
+            <button type="button" id="generate" class="primary primary--grow">レポートを作成</button>
+          </div>
+        </div>
+
+        <div id="status" class="status status--pad" role="status" aria-live="polite"></div>
+
+        <div id="proUpsell" class="proUpsell" hidden>
+          <p class="proUpsell__text" id="proUpsellText"></p>
+          <ul class="proUpsell__perks" id="proUpsellPerks" aria-label="Pro benefits">
+            <li id="proUpsellPerk1">無制限で生成</li>
+            <li id="proUpsellPerk2">最大10,000字</li>
+            <li id="proUpsellPerk3">高品質モード</li>
+          </ul>
+          <button type="button" id="proUpsellBtn" class="btnPro btnPro--block">Pro にする</button>
+        </div>
+
+        <div class="resultSection">
+          <div class="cardHead cardHead--row">
+            <div>
+              <h3 class="cardTitle" id="cardPreviewTitle">生成結果</h3>
+              <p class="cardLead" id="cardPreviewLead">生成した文章は、そのまま編集して使えます。</p>
+            </div>
+            <div class="outActions outActions--result">
+              <button type="button" id="copy" class="btnSecondary" disabled>コピー</button>
+              <button type="button" id="clear" class="btnSecondary">クリア</button>
+            </div>
+          </div>
+          <textarea
+            id="output"
+            class="textarea output"
+            rows="12"
+            placeholder="生成結果がここに表示されます"
+          ></textarea>
+          <div id="charCountBox" class="char-count-box" hidden aria-live="polite">
+            <div class="char-count-box__grid">
+              <div id="charCountCurrent"></div>
+              <div id="charCountTarget"></div>
+              <div id="charCountRemain"></div>
+            </div>
+            <p id="charCountWarn" class="char-count-box__warn" hidden></p>
+          </div>
+        </div>
+
+        <div class="quickTweakRow" id="quickTweakRow" role="group">
+          <button type="button" id="tweakNatural" class="pillTweak quickTweakBtn">もっと自然に</button>
+          <button type="button" id="tweakShorter" class="pillTweak quickTweakBtn">短く</button>
+          <button type="button" id="tweakStudent" class="pillTweak quickTweakBtn">大学生っぽく</button>
+          <button type="button" id="varyBtn" class="pillTweak quickTweakBtn" disabled>別の言い回し</button>
+          <button type="button" id="tweakIntl" class="pillTweak quickTweakBtn">留学生向け</button>
+        </div>
+
+        <aside class="funMeterCard" id="funMeterRow">
+          <div class="funMeterCard__glow" aria-hidden="true"></div>
+          <div class="funMeterCard__inner">
+            <div class="funMeterCard__head">
+              <h3 class="funMeterCard__title" id="funMeterCardTitle">下書きチェック</h3>
+              <span class="funMeterCard__subtitleLabel" id="funMeterBadgePill">AIっぽさ目安</span>
+            </div>
+            <p class="funMeterCard__empty" id="funMeterEmptyHint">生成すると、ここに表示されます</p>
+            <div class="funMeterCharCheck" id="funMeterCharWrap" hidden>
+              <div class="funMeterCharCheck__line" id="funCharLine">文字数：— / —字</div>
+              <div class="funMeterCharCheck__line" id="funCharRemainLine">残り：—字</div>
+            </div>
+            <div class="funMeterCard__metrics" id="funMeterMetricsWrap">
+              <div class="funMeterMetric">
+                <div class="funMeterMetric__head">
+                  <span class="funMeterMetric__label" id="funProfLabel">教授警戒度</span>
+                  <span class="funMeterMetric__hint funMeterMetric__hint--prof" id="funProfValue">—</span>
+                </div>
+                <div class="funMeterBarTrack funMeterBarTrack--prof" id="funProfBar" aria-hidden="true"></div>
+              </div>
+              <div class="funMeterMetric">
+                <div class="funMeterMetric__head">
+                  <span class="funMeterMetric__label" id="funGradeLabel">自然さ</span>
+                  <span class="funMeterMetric__hint funMeterMetric__hint--grade" id="funGradeValue">—</span>
+                </div>
+                <div class="funMeterBarTrack funMeterBarTrack--grade" id="funGradeBar" aria-hidden="true"></div>
+              </div>
+            </div>
+            <div class="draftChecklist" id="draftChecklist" hidden>
+              <div class="draftChecklist__title" id="draftChecklistTitle">提出前チェック</div>
+              <ul class="draftChecklist__list" id="draftChecklistList"></ul>
+            </div>
+            <p class="funDisclaimer" id="funDisclaimer"></p>
+          </div>
+        </aside>
+      </section>
+
+      <aside class="proCompare" id="proCompareCard" aria-labelledby="proCompareTitle" hidden>
+        <div class="proCompare__head">
+          <h2 class="proCompare__title" id="proCompareTitle">Free と Pro</h2>
+        </div>
+        <p class="proCompare__lead" id="proCompareLead">レポートが多い時期に便利な機能です</p>
+        <div class="proCompare__table" role="table">
+          <div class="proCompare__row proCompare__row--head" role="row">
+            <span class="proCompare__cell proCompare__cell--feature" role="columnheader"></span>
+            <span class="proCompare__cell" id="proCompareColFree" role="columnheader">Free</span>
+            <span class="proCompare__cell proCompare__cell--pro" id="proCompareColPro" role="columnheader">Pro</span>
+          </div>
+          <div class="proCompare__row" role="row">
+            <span class="proCompare__cell proCompare__cell--feature" id="proCompareRowText" role="rowheader">テキスト生成</span>
+            <span class="proCompare__cell" id="proCompareRowTextFree" role="cell">3回/日</span>
+            <span class="proCompare__cell proCompare__cell--pro" id="proCompareRowTextPro" role="cell">無制限</span>
+          </div>
+          <div class="proCompare__row" role="row">
+            <span class="proCompare__cell proCompare__cell--feature" id="proCompareRowImage" role="rowheader">表紙画像</span>
+            <span class="proCompare__cell" id="proCompareRowImageFree" role="cell">1枚/日</span>
+            <span class="proCompare__cell proCompare__cell--pro" id="proCompareRowImagePro" role="cell">無制限</span>
+          </div>
+          <div class="proCompare__row" role="row">
+            <span class="proCompare__cell proCompare__cell--feature" id="proCompareRowChars" role="rowheader">文字数目安</span>
+            <span class="proCompare__cell" id="proCompareRowCharsFree" role="cell">〜4,000字</span>
+            <span class="proCompare__cell proCompare__cell--pro" id="proCompareRowCharsPro" role="cell">〜10,000字</span>
+          </div>
+          <div class="proCompare__row" role="row">
+            <span class="proCompare__cell proCompare__cell--feature" id="proCompareRowQuality" role="rowheader">高品質モード</span>
+            <span class="proCompare__cell" id="proCompareRowQualityFree" role="cell">—</span>
+            <span class="proCompare__cell proCompare__cell--pro" id="proCompareRowQualityPro" role="cell">利用可</span>
+          </div>
+        </div>
+        <p class="proCompare__note" id="proCompareNote"></p>
+        <button type="button" id="proCompareCta" class="btnPro btnPro--block">Pro にする</button>
+      </aside>
+
+
+      <footer class="foot">
+        <div class="planLine">
+          <span id="planLineFree">Free テキスト 3 回/日 · 画像 1 回/日</span>
+          <span class="planLineSep" aria-hidden="true">/</span>
+          <span id="planLinePro">Pro 無制限 · 高品質モード</span>
+        </div>
+        <p class="footLinks">
+          <span id="footAuthLinks">
+            <a href="/login.html" id="footLogin">ログイン・新規登録</a>
+            <span class="footLinksSep" aria-hidden="true">·</span>
+            <a href="/login.html?intent=pro" id="footPro">Pro（課金）</a>
+            <span class="footLinksSep" aria-hidden="true">·</span>
+          </span>
+          <a href="/terms.html" id="footTerms">利用規約</a>
+          <span class="footLinksSep" aria-hidden="true">·</span>
+          <a href="/privacy.html" id="footPrivacy">プライバシー</a>
+          <span class="footLinksSep" aria-hidden="true">·</span>
+          <a href="/tokusho.html" id="footTokusho">特商法表記</a>
+          <span class="footLinksSep" aria-hidden="true">·</span>
+          <a href="/contact.html" id="footContact">お問い合わせ</a>
+        </p>
+        <details class="accountPanel" id="accountPanel" hidden>
+          <summary id="accountPanelSummary">アカウント設定</summary>
+          <div class="accountPanelBody">
+            <p class="accountPanelLead" id="accountPanelLead">ログイン中のアカウントを管理します。</p>
+            <label class="accountField">
+              <span id="accountDeleteEmailLabel">確認用メール</span>
+              <input type="email" id="accountDeleteEmail" class="input input--compact" autocomplete="off" />
+            </label>
+            <label class="accountField" id="accountDeletePwWrap">
+              <span id="accountDeletePwLabel">パスワード</span>
+              <input type="password" id="accountDeletePassword" class="input input--compact" autocomplete="current-password" />
+            </label>
+            <button type="button" id="deleteAccountBtn" class="btnTiny btnDangerTiny">アカウントを削除</button>
+          </div>
+        </details>
+        <p class="footNote" id="footNote">
+          下書き補助ツールです。提出前の内容・引用・学内ルールはご自身でご確認ください。
+        </p>
+      </footer>
+    </main>
+
+    <script src="/app.js" type="module"></script>
+  </body>
+</html>

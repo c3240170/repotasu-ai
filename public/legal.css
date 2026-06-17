@@ -1,0 +1,100 @@
+:root {
+  --legal-bg: #f0ebe3;
+  --legal-ink: #1a1a2e;
+  --legal-muted: #5c5c6e;
+  --legal-line: #d8d0c4;
+  --legal-card: #fff;
+  --legal-accent: #2d4a7a;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: 'Segoe UI', 'Hiragino Sans', 'Yu Gothic UI', Meiryo, sans-serif;
+  background: var(--legal-bg);
+  color: var(--legal-ink);
+  line-height: 1.75;
+}
+
+.legalWrap {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 32px 20px 48px;
+}
+
+.legalCard {
+  background: var(--legal-card);
+  border: 1px solid var(--legal-line);
+  border-radius: 16px;
+  padding: 28px 24px;
+  box-shadow: 0 8px 24px rgba(26, 26, 46, 0.06);
+}
+
+.legalBack {
+  display: inline-block;
+  margin-bottom: 16px;
+  color: var(--legal-accent);
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.legalBack:hover {
+  text-decoration: underline;
+}
+
+h1 {
+  margin: 0 0 8px;
+  font-size: 1.5rem;
+}
+
+.legalMeta {
+  margin: 0 0 24px;
+  color: var(--legal-muted);
+  font-size: 0.85rem;
+}
+
+h2 {
+  margin: 28px 0 8px;
+  font-size: 1.05rem;
+}
+
+p,
+ul,
+ol {
+  margin: 0 0 12px;
+}
+
+ul,
+ol {
+  padding-left: 1.4em;
+}
+
+.legalFoot {
+  margin-top: 28px;
+  padding-top: 16px;
+  border-top: 1px solid var(--legal-line);
+  font-size: 0.85rem;
+  color: var(--legal-muted);
+}
+
+.legalFoot a {
+  color: var(--legal-accent);
+}
+
+.legalMail {
+  font-weight: 700;
+  word-break: break-all;
+}
+
+.legalWarn {
+  background: #fff8e6;
+  border: 1px solid #f0d78c;
+  border-radius: 10px;
+  padding: 12px 14px;
+  margin-bottom: 20px;
+  font-size: 0.9rem;
+}
