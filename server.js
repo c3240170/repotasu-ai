@@ -692,13 +692,31 @@ function enforceCharLimit(text, targetChars) {
 }
 
 /**
- * @param {{ system: string, quality: string, targetChars: number, text: string }} p
+ * @param {{
+ *  system: string,
+ *  quality: string,
+ *  targetChars: number,
+ *  text: string,
+ *  allowAiTrim?: boolean,
+ *  aiTrimTimeoutMs?: number
+ * }} p
  * @returns {Promise<{ text: string, adjusted: boolean, method?: string }>}
  */
-async function ensureWithinCharLimit({ system, quality, targetChars, text }) {
+async function ensureWithinCharLimit({
+  system,
+  quality,
+  targetChars,
+  text,
+  allowAiTrim = true,
+  aiTrimTimeoutMs = 8000
+}) {
   let out = String(text ?? '').trim();
   if (countTextChars(out) <= targetChars) {
     return { text: out, adjusted: false };
+  }
+
+  if (!allowAiTrim) {
+    return { text: enforceCharLimit(out, targetChars), adjusted: true, method: 'truncate_policy' };
   }
 
   const trimUser = [
@@ -711,23 +729,35 @@ async function ensureWithinCharLimit({ system, quality, targetChars, text }) {
     out
   ].join('\n');
 
+  let timeoutId;
   try {
-    const trimmed = await runTextCompletion({
-      system,
-      user: trimUser,
-      images: [],
-      temperature: 0.35,
-      quality,
-      useVision: false,
-      jsonMode: false
-    });
+    const trimmed = await Promise.race([
+      runTextCompletion({
+        system,
+        user: trimUser,
+        images: [],
+        temperature: 0.35,
+        quality,
+        useVision: false,
+        jsonMode: false
+      }),
+      new Promise((_, reject) => {
+        timeoutId = setTimeout(() => reject(new Error('AI_TRIM_TIMEOUT')), aiTrimTimeoutMs);
+      })
+    ]);
     const t = String(trimmed ?? '').trim();
     if (t && countTextChars(t) <= targetChars) {
       return { text: t, adjusted: true, method: 'ai_trim' };
     }
     if (t && countTextChars(t) < countTextChars(out)) out = t;
-  } catch {
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
+    if (msg === 'AI_TRIM_TIMEOUT') {
+      return { text: enforceCharLimit(out, targetChars), adjusted: true, method: 'truncate_timeout' };
+    }
     /* 切り詰めへフォールバック */
+  } finally {
+    if (timeoutId) clearTimeout(timeoutId);
   }
 
   return { text: enforceCharLimit(out, targetChars), adjusted: true, method: 'truncate' };
@@ -1891,7 +1921,27 @@ app.post('/api/auth/delete-account', requireAuth, async (req, res) => {
 });
 
 app.post('/api/generate', async (req, res) => {
+  const perfStartedAt = Date.now();
+  const perfId = `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 7)}`;
+  const perf = {
+    preMs: 0,
+    promptMs: 0,
+    aiMs: 0,
+    enforceMs: 0,
+    persistMs: 0
+  };
+  const perfMeta = {
+    provider: resolveAiProvider() || 'none',
+    quality: 'normal',
+    images: 0,
+    rewriteIntent: '',
+    targetChars: 0,
+    allowAiTrim: false,
+    adjustMethod: 'none',
+    success: false
+  };
   try {
+    const preStartAt = Date.now();
     attachActor(req, res);
     if (!textAiReady()) {
       return res.status(500).json({
@@ -1938,6 +1988,8 @@ app.post('/api/generate', async (req, res) => {
     let rewriteIntent = String(req.body?.rewriteIntent ?? '').trim();
     if (!ALLOWED_REWRITE.has(rewriteIntent)) rewriteIntent = '';
     if (!rewriteIntent && Boolean(req.body?.variation)) rewriteIntent = 'rephrase';
+    perfMeta.quality = quality;
+    perfMeta.rewriteIntent = rewriteIntent || 'none';
 
     const referenceRaw = String(req.body?.referenceMaterial ?? '').trim();
     const referenceMaterial =
@@ -1966,13 +2018,17 @@ app.post('/api/generate', async (req, res) => {
     }
 
     const parsedImagesForVision = usesRevisionBase ? [] : parsedImages;
+    perfMeta.images = parsedImagesForVision.length;
+    perfMeta.targetChars = targetChars;
 
     if (!usesRevisionBase && !theme && parsedImages.length === 0 && !referenceMaterial) {
       return res
         .status(400)
         .json({ error: 'テーマを入力するか、参考資料を貼るか、資料画像を添付してください。' });
     }
+    perf.preMs = Date.now() - preStartAt;
 
+    const promptStartAt = Date.now();
     const studentModeLabel =
       modeKey === 'honors' ? '優等生' : modeKey === 'barely' ? 'ギリ単（最低限・素早く）' : '普通の大学生';
 
@@ -2162,7 +2218,9 @@ app.post('/api/generate', async (req, res) => {
     else if (REVISION_INTENTS.has(rewriteIntent) || rephraseWithBase) tempBoost = 0.1;
     if (rewriteIntent === 'trim_chars') tempBoost = 0.05;
     const temperature = Math.min(0.95, baseTemp + tempBoost);
+    perf.promptMs = Date.now() - promptStartAt;
 
+    const aiStartAt = Date.now();
     const textRaw = await runTextCompletion({
       system,
       user,
@@ -2172,18 +2230,34 @@ app.post('/api/generate', async (req, res) => {
       useVision,
       jsonMode: false
     });
+    perf.aiMs = Date.now() - aiStartAt;
 
+    const allowAiTrim = Boolean(req.actPro && quality === 'high' && perf.aiMs <= 12000);
+    perfMeta.allowAiTrim = allowAiTrim;
+    const enforceStartAt = Date.now();
     const enforced = await ensureWithinCharLimit({
       system,
       quality,
       targetChars,
-      text: textRaw
+      text: textRaw,
+      allowAiTrim,
+      aiTrimTimeoutMs: 8000
     });
+    perf.enforceMs = Date.now() - enforceStartAt;
+    perfMeta.adjustMethod = enforced.method || 'none';
     const text = enforced.text;
     const charCount = countTextChars(text);
 
+    const persistStartAt = Date.now();
     req.actUsage.text += 1;
     writeStore(req.store);
+    perf.persistMs = Date.now() - persistStartAt;
+    perfMeta.success = true;
+    const totalMs = Date.now() - perfStartedAt;
+    // eslint-disable-next-line no-console
+    console.log(
+      `[perf] /api/generate id=${perfId} ok=1 total_ms=${totalMs} pre_ms=${perf.preMs} prompt_ms=${perf.promptMs} ai_ms=${perf.aiMs} enforce_ms=${perf.enforceMs} persist_ms=${perf.persistMs} provider=${perfMeta.provider} quality=${perfMeta.quality} images=${perfMeta.images} rewrite=${perfMeta.rewriteIntent} target_chars=${perfMeta.targetChars} allow_ai_trim=${perfMeta.allowAiTrim ? 1 : 0} adjust_method=${perfMeta.adjustMethod}`
+    );
 
     res.json({
       text,
@@ -2196,6 +2270,11 @@ app.post('/api/generate', async (req, res) => {
       usage: usageForResponse(req)
     });
   } catch (err) {
+    const totalMs = Date.now() - perfStartedAt;
+    // eslint-disable-next-line no-console
+    console.error(
+      `[perf] /api/generate id=${perfId} ok=0 total_ms=${totalMs} pre_ms=${perf.preMs} prompt_ms=${perf.promptMs} ai_ms=${perf.aiMs} enforce_ms=${perf.enforceMs} persist_ms=${perf.persistMs} provider=${perfMeta.provider} quality=${perfMeta.quality} images=${perfMeta.images} rewrite=${perfMeta.rewriteIntent} target_chars=${perfMeta.targetChars} allow_ai_trim=${perfMeta.allowAiTrim ? 1 : 0} adjust_method=${perfMeta.adjustMethod}`
+    );
     respondAiError(res, err, '/api/generate failed');
   }
 });
